@@ -4,169 +4,271 @@
   <meta charset="UTF-8">
   <title>Admin Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <style>
     body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: #f8f9fa;
+      overflow-x: hidden;
     }
-    .card {
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+    /* Sidebar */
+    #sidebar {
+      height: 100vh;
+      width: 220px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: #343a40;
+      color: white;
+      transition: width 0.3s;
+      z-index: 1000;
     }
-    h1, h2 {
-      font-weight: bold;
+    #sidebar.collapsed { width: 60px; }
+    #sidebar .nav-link {
+      color: #adb5bd;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      transition: background 0.3s, color 0.3s;
     }
-    .table img {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 10px;
+    #sidebar .nav-link:hover { background: #495057; color: white; }
+    #sidebar .nav-link i { margin-right: 10px; min-width: 20px; text-align: center; }
+    #sidebar.collapsed .nav-link span { display: none; }
+
+    /* Content */
+    #content { margin-left: 220px; transition: margin-left 0.3s; padding: 30px; }
+    #sidebar.collapsed ~ #content { margin-left: 60px; }
+
+    /* Cards */
+    .card-stats { border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s; }
+    .card-stats:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+
+    /* Buttons */
+    .btn-primary, .btn-success, .btn-danger { border: none; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-primary:hover, .btn-success:hover, .btn-danger:hover { transform: translateY(-2px); }
+
+    /* Sidebar toggle button */
+    #sidebarCollapse {
+      position: fixed; top: 15px; left: 230px; z-index: 1100;
+      background: #343a40; color: white; border: none; border-radius: 5px; padding: 8px 12px; cursor: pointer; transition: left 0.3s;
     }
+    #sidebar.collapsed + #sidebarCollapse { left: 70px; }
+
+    /* Tabs */
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* Product Card Styles */
+    .product-card { border-radius: 10px; padding: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); text-align: center; margin-bottom: 20px; }
+    .product-card img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+    .sparkline { width: 100%; height: 30px; display: flex; align-items: flex-end; margin-bottom: 10px; }
   </style>
 </head>
-<body class="p-5">
+<body>
 
-  <div class="container">
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <h4 class="text-center py-3 fw-bold">Admin</h4>
+    <ul class="nav flex-column">
+      <li class="nav-item"><a href="#" class="nav-link active" data-tab="customers"><i class="fas fa-users"></i><span>Customers</span></a></li>
+      <li class="nav-item"><a href="#" class="nav-link" data-tab="products"><i class="fas fa-box"></i><span>Products</span></a></li>
+      <li class="nav-item"><a href="#" class="nav-link" data-tab="orders"><i class="fas fa-shopping-cart"></i><span>Orders</span></a></li>
+      <li class="nav-item"><a href="#" class="nav-link" data-tab="analytics"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+    </ul>
+  </div>
+
+  <!-- Sidebar Toggle -->
+  <button id="sidebarCollapse"><i class="fas fa-bars"></i></button>
+
+  <!-- Content -->
+  <div id="content">
     <h1 class="mb-4 text-center">✨ Admin Dashboard</h1>
 
-    <!-- ------------------- Customers ------------------- -->
-    <div class="card mb-5">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">👤 Customers</h2>
-        <a href="{{ url_for('customers.add_customer') }}" class="btn btn-success">+ Add Customer</a>
-      </div>
-      <div class="card-body">
-        <table class="table table-hover align-middle">
-          <thead class="table-dark">
-            <tr>
-              {% if customers %}
-                {% for col in customers[0].keys() %}
-                  <th>{{ col|capitalize }}</th>
-                {% endfor %}
-                <th>Actions</th>
-              {% else %}
-                <th>No Customers Found</th>
-              {% endif %}
-            </tr>
-          </thead>
-          <tbody>
-            {% for row in customers %}
-            <tr>
-              {% for col in row.values() %}
-                <td>{{ col }}</td>
-              {% endfor %}
-              <td>
-                <a href="{{ url_for('customers.update_customer', id=row.id) }}" class="btn btn-sm btn-primary">Edit</a>
-                <form action="{{ url_for('customers.delete_customer', id=row.id) }}" method="POST" style="display:inline;">
-                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                </form>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    <!-- Stats Cards -->
+    <div class="row mb-5 g-4">
+      <div class="col-md-4"><div class="card card-stats p-3 text-center bg-primary text-white"><h5>Total Sales</h5><h3>₹{{ total_revenue }}</h3></div></div>
+      <div class="col-md-4"><div class="card card-stats p-3 text-center bg-success text-white"><h5>Total Orders</h5><h3>{{ total_quantity }}</h3></div></div>
+      <div class="col-md-4"><div class="card card-stats p-3 text-center bg-warning text-dark"><h5>Total Profit</h5><h3>₹{{ (total_revenue * 0.08)|round(2) }}</h3></div></div>
     </div>
 
-    <!-- ------------------- Products ------------------- -->
-    <div class="card mb-5">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">📦 Products</h2>
-        <a href="{{ url_for('products.add_product') }}" class="btn btn-success">+ Add Product</a>
-      </div>
-      <div class="card-body">
-        <table class="table table-hover align-middle">
-          <thead class="table-dark">
-            <tr>
-              {% if products %}
-                {% for col in products[0].keys() %}
-                  <th>{{ col|capitalize }}</th>
-                {% endfor %}
-                <th>Image</th>
-                <th>Actions</th>
-              {% else %}
-                <th>No Products Found</th>
-              {% endif %}
-            </tr>
-          </thead>
-          <tbody>
-            {% for row in products %}
-            <tr>
-              {% for col, val in row.items() %}
-                <td>{{ val }}</td>
-              {% endfor %}
-              <td>
-                {% if row.image_url %}
-                  <img src="{{ row.image_url }}" alt="{{ row.name }}">
-                {% else %}
-                  <span class="text-muted">No Image</span>
-                {% endif %}
-              </td>
-              <td>
-                <a href="{{ url_for('products.update_product', id=row.id) }}" class="btn btn-sm btn-primary">Edit</a>
-                <form action="{{ url_for('products.delete_product', id=row.id) }}" method="POST" style="display:inline;">
-                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                </form>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <!-- Tab Contents -->
+    <div id="tab-content">
 
-    <!-- ------------------- Orders ------------------- -->
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">🛒 Orders</h2>
-        <a href="{{ url_for('orders.add_order') }}" class="btn btn-success">+ Add Order</a>
+      <!-- Customers Table -->
+      <div id="customers" class="tab-pane active">
+        <div class="card mb-5">
+          <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
+            <h2 class="mb-0">👤 Customers</h2>
+            <a href="{{ url_for('customers.add_customer') }}" class="btn btn-success">+ Add Customer</a>
+          </div>
+          <div class="card-body p-3">
+            <table class="table table-hover align-middle">
+              <thead>
+                <tr>
+                  {% if customers %}
+                    {% for col in customers[0].keys() %}
+                      <th>{{ col|capitalize }}</th>
+                    {% endfor %}
+                    <th>Actions</th>
+                  {% else %}
+                    <th>No Customers Found</th>
+                  {% endif %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in customers %}
+                <tr>
+                  {% for col in row.values() %}<td>{{ col }}</td>{% endfor %}
+                  <td>
+                    <a href="{{ url_for('customers.update_customer', id=row.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                    <form action="{{ url_for('customers.delete_customer', id=row.id) }}" method="POST" style="display:inline;">
+                      <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
-        <table class="table table-hover align-middle">
-          <thead class="table-dark">
-            <tr>
-              <th>Order ID</th>
-              <th>Customer ID</th>
-              <th>Product ID</th>
-              <th>Quantity</th>
-              <th>Product Name</th>
-              <th>Price</th>
-              <th>Total Price</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for row in orders %}
-            <tr {% if row.customerid == logged_in_user_id %}class="table-success"{% endif %}>
-              <td>{{ row.id_order }}</td>
-              <td>{{ row.customerid }}</td>
-              <td>{{ row.productid }}</td>
-              <td>{{ row.quantity }}</td>
-              <td>{{ row.name }}</td>
-              <td>{{ row.price }}</td>
-              <td>{{ row.total_price }}</td>
-              <td>
-                <a href="{{ url_for('orders.update_order', id=row.id_order) }}" class="btn btn-sm btn-primary">Edit</a>
-                <form action="{{ url_for('orders.delete_order', id=row.id_order) }}" method="POST" style="display:inline;">
+
+      <!-- Products Tab -->
+      <div id="products" class="tab-pane">
+        <div class="row g-4">
+          {% for p in products %}
+          <div class="col-md-4">
+            <div class="product-card">
+              <img src="
+              {% if 'iphone' in p.name|lower %}
+                https://th.bing.com/th?id=OIF.%2fjB1JQ7vILhCpfH4iAn4Hw&rs=1&pid=ImgDetMain&o=7&rm=3
+              {% elif 'samsung' in p.name|lower %}
+                https://tse4.mm.bing.net/th/id/OIP.SVVt5vRYg3xb-NjAYY3M-QHaE8?rs=1&pid=ImgDetMain&o=7&rm=3
+              {% elif 'nike' in p.name|lower %}
+                https://tse3.mm.bing.net/th/id/OIP.gKcgKUVIAgFzHs7irf17lgHaEo?rs=1&pid=ImgDetMain&o=7&rm=3
+              {% elif 'mac' in p.name|lower %}
+                https://images.dubizzle.com.eg/thumbnails/115542293-800x600.jpeg
+              {% elif 'shirt' in p.name|lower %}
+                https://ramrajcotton.in/cdn/shop/files/240524_ramraj0170.jpg?v=1718031353&width=1080
+              {% elif 'shervani' in p.name|lower %}
+                https://th.bing.com/th/id/OIP.AdXPrMrIDu4vVBbWYF87RwHaKL?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3
+              {% elif 'bagpack' in p.name|lower %}
+                https://m.media-amazon.com/images/I/71FbaycZzeL._SL1500_.jpg
+              {% elif 'fridge' in p.name|lower %}
+                https://th.bing.com/th/id/R.e1486b6009c6f288979d59cebfc3b86a?rik=xRZOkgiqrNdMgg&riu=http%3a%2f%2ffridge.com%2fcdn%2fshop%2farticles%2fa3df1a9580bb57c0bc2a5bc844b6b9ec663eb517313aa2e6f399b20615856ac1.webp%3fv%3d1727770942&ehk=viHU9%2b6%2f4hVJOUpkawuA5r0xu%2brJv10TFCsdeSzZPI8%3d&risl=&pid=ImgRaw&r=0
+              {% elif 'sofa' in p.name|lower %}
+                https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRN6rsV8qE1NRm6B-uWcUTPi6IszqaECNrZTwqEVA7iQb2f-piBUVqOj3UelzZu2kNhLkyTBfRMpH7I4vt_j0B7tARQ_v4AMNlqH0uc4a4
+              {% elif 'watch' in p.name|lower %}
+                https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRUqajEJg5B0KNC4vSP6xlNjhT9RJeFE_6b0fnCK6840GWyvKnHqE_K6r4HDJV70xXWyhKI-nxmsNCTMpAImrxqq6Qxe3NuEA
+              {% elif 'mobile cover' in p.name|lower %}
+                https://gorillacasestore.com/cdn/shop/files/iphone-17-strong-magnet-shock-resistance-magnetic-kickstand-case-272270.webp?v=1748235084
+              {% endif %}" alt="{{ p.name }}">
+              <h5>{{ p.name }}</h5>
+              <p>Price: ₹{{ p.price }}</p>
+              <p>Profit: ₹{{ (p.price*0.08)|round(2) }}</p>
+              <div class="sparkline" data-values="{{ p.sales|join(',') }}"></div>
+              <div class="d-flex justify-content-center gap-2 mt-2">
+                <a href="{{ url_for('products.update_product', id=p.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                <form action="{{ url_for('products.delete_product', id=p.id) }}" method="POST" style="display:inline;">
                   <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                 </form>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-          {% if orders %}
-          <tfoot>
-            <tr class="table-info">
-              <td colspan="3">Total Quantity Sold: {{ total_quantity }}</td>
-              <td colspan="4">Total Sales: {{ total_revenue }}</td>
-              <td colspan="4">Total Profit: {{ total_profit }}</td>
-              <td></td>
-            </tr>
-          </tfoot>
-          {% endif %}
-        </table>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
       </div>
+
+      <!-- Orders Table -->
+      <div id="orders" class="tab-pane">
+        <div class="card mb-5">
+          <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
+            <h2 class="mb-0">🛒 Orders</h2>
+            <a href="{{ url_for('orders.add_order') }}" class="btn btn-success">+ Add Order</a>
+          </div>
+          <div class="card-body p-3">
+            <table class="table table-hover align-middle">
+              <thead>
+                <tr>
+                  <th>Order ID</th><th>Customer ID</th><th>Product ID</th><th>Quantity</th><th>Product Name</th><th>Price</th><th>Total Price</th><th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in orders %}
+                <tr {% if row.customerid == logged_in_user_id %}class="table-success"{% endif %}>
+                  <td>{{ row.id_order }}</td><td>{{ row.customerid }}</td><td>{{ row.productid }}</td>
+                  <td>{{ row.quantity }}</td><td>{{ row.name }}</td><td>{{ row.price }}</td>
+                  <td>{{ row.total_price }}</td>
+                  <td>
+                    <a href="{{ url_for('orders.update_order', id=row.id_order) }}" class="btn btn-sm btn-primary">Edit</a>
+                    <form action="{{ url_for('orders.delete_order', id=row.id_order) }}" method="POST" style="display:inline;">
+                      <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analytics -->
+<div id="analytics" class="tab-pane">
+<div class="card mb-5 p-3">
+<h2>📊 Total Sales Analytics</h2>
+<p>Total Revenue: ₹{{ total_revenue }}</p>
+<p>Total Orders: {{ total_quantity }}</p>
+<p>Total Profit: ₹{{ (total_revenue*0.08)|round(2) }}</p>
+<div id="analytics-chart"></div>
+</div>
+</div>
+
     </div>
   </div>
 
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Sidebar toggle
+    $('#sidebarCollapse').click(function(){ $('#sidebar').toggleClass('collapsed'); });
+
+    // Tab switching
+    $('#sidebar .nav-link').click(function(e){
+      e.preventDefault();
+      $('#sidebar .nav-link').removeClass('active');
+      $(this).addClass('active');
+      var tab = $(this).data('tab');
+      $('.tab-pane').removeClass('active');
+      $('#' + tab).addClass('active');
+      renderSparklines();
+    });
+
+    // Sparkline rendering
+    function renderSparklines(){
+      $('.sparkline').each(function(){
+        var vals = $(this).data('values').split(',').map(Number);
+        $(this).empty();
+        var max = Math.max.apply(null, vals) || 1;
+        for(var i=0;i<vals.length;i++){
+          var height = vals[i]/max*100;
+          $('<div></div>').css({
+            'flex':'1',
+            'margin-right':'2px',
+            'height':height+'%',
+            'background':'#0d6efd',
+            'border-radius':'2px'
+          }).appendTo(this);
+        }
+      });
+    }
+    
+    
+
+    $(document).ready(renderSparklines);
+
+    
+  </script>
 </body>
 </html>
