@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Products{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4 fw-bold">Explore Our Products</h2>
+
+  <!-- 🔎 Search Form -->
+  <form method="GET" action="{{ url_for('products.list_products') }}" class="mb-4 d-flex justify-content-center">
+    <input 
+      type="text" 
+      name="q" 
+      class="form-control w-50 me-2 rounded-pill border-secondary" 
+      placeholder="Search products by name..."
+      value="{{ request.args.get('q', '') }}">
+    <button type="submit" class="btn btn-primary rounded-pill px-4">Search</button>
+  </form>
+
+  <div class="row g-4">
+    {% if products %}
+      {% for p in products %}
+      <div class="col-md-4 col-sm-8">
+        <div class="card shadow-lg border-0 h-100 rounded-4 hover-scale">
+          <!-- Product Image -->
+          <img 
+            src="
+            {% if 'iphone' in p.name|lower %}
+              https://th.bing.com/th?id=OIF.%2fjB1JQ7vILhCpfH4iAn4Hw&rs=1&pid=ImgDetMain&o=7&rm=3
+            {% elif 'samsung' in p.name|lower %}
+              https://tse4.mm.bing.net/th/id/OIP.SVVt5vRYg3xb-NjAYY3M-QHaE8?rs=1&pid=ImgDetMain&o=7&rm=3
+            {% elif 'nike' in p.name|lower %}
+              https://tse3.mm.bing.net/th/id/OIP.gKcgKUVIAgFzHs7irf17lgHaEo?rs=1&pid=ImgDetMain&o=7&rm=3
+            {% elif 'mac' in p.name|lower %}
+              https://images.dubizzle.com.eg/thumbnails/115542293-800x600.jpeg
+            {% elif 'shirt' in p.name|lower %}
+              https://ramrajcotton.in/cdn/shop/files/240524_ramraj0170.jpg?v=1718031353&width=1080
+            {% elif 'shervani' in p.name|lower %}
+              https://th.bing.com/th/id/OIP.AdXPrMrIDu4vVBbWYF87RwHaKL?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3
+            {% elif 'bagpack' in p.name|lower %}
+              https://m.media-amazon.com/images/I/71FbaycZzeL._SL1500_.jpg
+            {% elif 'fridge' in p.name|lower %}
+              https://th.bing.com/th/id/R.e1486b6009c6f288979d59cebfc3b86a?rik=xRZOkgiqrNdMgg&riu=http%3a%2f%2ffridge.com%2fcdn%2fshop%2farticles%2fa3df1a9580bb57c0bc2a5bc844b6b9ec663eb517313aa2e6f399b20615856ac1.webp%3fv%3d1727770942&ehk=viHU9%2b6%2f4hVJOUpkawuA5r0xu%2brJv10TFCsdeSzZPI8%3d&risl=&pid=ImgRaw&r=0
+            {% elif 'sofa' in p.name|lower %}
+              https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRN6rsV8qE1NRm6B-uWcUTPi6IszqaECNrZTwqEVA7iQb2f-piBUVqOj3UelzZu2kNhLkyTBfRMpH7I4vt_j0B7tARQ_v4AMNlqH0uc4a4
+            {% elif 'watch' in p.name|lower %}
+              https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRUqajEJg5B0KNC4vSP6xlNjhT9RJeFE_6b0fnCK6840GWyvKnHqE_K6r4HDJV70xXWyhKI-nxmsNCTMpAImrxqq6Qxe3NuEA
+            {% elif 'mobile cover' in p.name|lower %}
+              https://gorillacasestore.com/cdn/shop/files/iphone-17-strong-magnet-shock-resistance-magnetic-kickstand-case-272270.webp?v=1748235084
+            {% endif %}
+            " 
+            class="card-img-top p-3 " 
+            alt="{{ p.name }}">
+          
+          <div class="card-body d-flex flex-column text-center">
+            <h5 class="fw-bold">{{ p.name }}</h5>
+            <p class="text-muted mb-1">{{ p.details }}</p>
+            <p class="text-muted mb-1">{{ p.category }}</p>
+            <p class="fw-bold text-dark">₹{{ p.price }}</p>
+            <p class="fw-bold text-dark">✨{{ p.rating }}</p>
+
+            {% if session.get('user_id') %}
+            <form method="GET" action="{{ url_for('orders.add_order') }}" class="mt-auto w-100">
+              <input type="hidden" name="product_id" value="{{ p.id }}">
+              <div class="input-group mb-2">
+                <input type="number" name="quantity" value="1" min="1" class="form-control text-center">
+              </div>
+              <button type="submit" class="btn btn-warning w-100 rounded-pill fw-bold">Buy Now</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-center text-muted">No products found.</p>
+    {% endif %}
+  </div>
+</div>
+<style>
+  .hover-scale:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s;
+  }
+</style>
+{% endblock %}

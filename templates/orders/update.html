@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Update Order{% endblock %}
+{% block content %}
+<h2>Update Order</h2>
+<form method="POST">
+  <div class="mb-3">
+    <label>Product</label>
+    <select name="product_id" class="form-control" required>
+      {% for p in products %}
+      <option value="{{ p.id }}" {% if order.productid == p.id %}selected{% endif %}>{{ p.name }} (ID:{{ p.id }})</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label>Quantity</label>
+    <input type="number" name="quantity" value="{{ order.quantity }}" class="form-control" required>
+  </div>
+  <button type="submit" class="btn btn-warning">Update Order</button>
+</form>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Welcome Banner -->
+    <div class="text-center mb-5 p-4 bg-white rounded shadow-sm">
+        <h1 class="display-5">Welcome to MyShop</h1>
+        <p class="lead mt-2">Your one-stop shop for all your favorite products!</p>
+    </div>
+
+    {% if session.get("user_id") %}
+        <div class="text-center mb-4">
+            <p class="h5">Logged in as <strong>{{ session.get("role")|capitalize }}</strong></p>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap mb-5">
+            {% if session.get("role") == "customer" %}
+                <a href="{{ url_for('products.display_products') }}" class="btn btn-primary btn-lg px-4">
+                    Browse Products 🛍️
+                </a>
+                <a href="{{ url_for('orders.display_orders') }}" class="btn btn-warning btn-lg px-4">
+                    My Orders 🛒
+                </a>
+            {% elif session.get("role") == "seller" %}
+                <a href="{{ url_for('products.manage_products') }}" class="btn btn-warning btn-lg px-4">
+                    Manage Products 🏷️
+                </a>
+            {% elif session.get("role") == "admin" %}
+                <a href="{{ url_for('view_admin_data') }}" class="btn btn-danger btn-lg px-4">
+                    Admin Dashboard ⚡
+                </a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary btn-lg px-4">
+                Logout
+            </a>
+        </div>
+    {% else %}
+        <!-- Guest Users -->
+        <div class="text-center mb-5">
+            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg px-4 me-2">Login</a>
+            <a href="{{ url_for('users.register') }}" class="btn btn-success btn-lg px-4">Register</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

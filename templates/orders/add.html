@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Place Order{% endblock %}
+{% block content %}
+<h2>Place Order</h2>
+<form method="POST">
+  <div class="mb-3">
+    <label>Product</label>
+    <select name="product_id" class="form-control" required>
+      {% for p in products %}
+      <option value="{{ p.id }}" {% if request.args.get('product_id')|int == p.id %}selected{% endif %}>{{ p.name }} (ID:{{ p.id }})</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label>Quantity</label>
+    <input type="number" name="quantity" class="form-control" required>
+  </div>
+  <button type="submit" class="btn btn-success">Place Order</button>
+</form>
+{% endblock %}
