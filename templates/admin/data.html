@@ -90,6 +90,9 @@
       <div class="col-md-4"><div class="card card-stats p-3 text-center bg-primary text-white"><h5>Total Sales</h5><h3>₹{{ total_revenue }}</h3></div></div>
       <div class="col-md-4"><div class="card card-stats p-3 text-center bg-success text-white"><h5>Total Orders</h5><h3>{{ total_quantity }}</h3></div></div>
       <div class="col-md-4"><div class="card card-stats p-3 text-center bg-warning text-dark"><h5>Total Profit</h5><h3>₹{{ (total_revenue * 0.08)|round(2) }}</h3></div></div>
+      <li class="nav-item text-dark">
+        <a class="btn btn-success btn-sm text-white px-3 py-2" href="{{ url_for('logout') }}">Logout</a>
+      </li>
     </div>
 
     <!-- Tab Contents -->
