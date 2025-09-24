@@ -1,0 +1,132 @@
+# 🛒 E-Commerce Web Application  
+ A Flask-based **E-Commerce Web App** where:  
+  - Users can register/login and browse products  
+  - Customers can place orders  
+  - Sellers can add/update products  
+  - Admins can manage users, products, and orders  
+ Data can be stored in Excel (beginner-friendly).
+
+## 🚀 Features  
+
+ - 👤 **User Roles**:  
+   - **Customer** → Browse products, place orders, view past orders  
+   - **Seller** → Add, update, and manage products  
+   - **Admin** → Full CRUD (Users, Products, Orders)  
+
+ - 📦 **Products Management**  
+   - Add, update, delete products  
+   - View all products  
+
+ - 🛍 **Orders Management**  
+   - Customers place orders  
+   - Admin manages all orders  
+
+ - 🗂 **Excel**  
+   - Beginner friendly with Excel  
+
+## 📂 Project Structure  
+
+  ECOMMERCE_APP/
+   ├── app.py            # Main entry point
+   ├── data_new.xlsx     # Excel storage (if using Excel)
+   ├── requirements.txt  # Python dependencies
+   ├── routes/           # Flask Blueprints
+   │ ├── customers/
+   │ │ └── customers.py
+   │ ├── orders/
+   │ │ └── orders.py
+   │ ├── products/
+   │ │ └── products.py
+   │ └── users/
+   │ └── users.py
+   ├── templates/         # HTML templates (Jinja2 and using inline css/Bootstrap)
+   ├── base.html
+   ├── home.html
+   ├── customers/
+   │   └──  add.html
+   │   └──  details.html
+   │   └──  update.html
+   ├── orders/
+   │   └── add.html
+   │   └── details.html
+   │   └── orders.html
+   │   └── update.html
+   ├── products/
+   │   └── add.html
+   │   └── details.html
+   │   └── manage_products.html
+   │   └── update.html
+   ├── products/
+   │   └── login.html
+   │   └── register.html
+   └── admin/
+      └── data.html
+      └── login.html
+
+
+## ⚙️ Installation  
+
+1. **Clone the repo**  
+
+  ```bash
+  git clone https://github.com/yourusername/ECOMMERCE_APP.git
+  cd ECOMMERCE_APP
+
+*Create virtual environment (recommended)
+
+  python -m venv venv
+  source venv/bin/activate   # On Linux/Mac
+  venv\Scripts\activate      # On Windows
+
+*Install dependencies
+
+  pip install -r requirements.txt
+
+
+📦 Requirements
+
+  Your requirements.txt should contain:
+
+  flask
+  pandas
+
+
+▶️ Running the App
+	
+  Run Flask server
+
+  python app.py
+
+▶️Open in browser
+
+  http://127.0.0.1:5000/
+
+🔑 Default Credentials
+
+ Admin Login
+
+  Username: admin
+
+  Password: admin (or as configured in your users.xlsx)
+
+ (Update credentials in your Excel)
+
+🛠 Tech Stack
+
+ *Backend → Python, Flask, Pandas/SQLite
+
+ *Frontend → HTML, CSS (Bootstrap), Jinja2
+
+ *Storage → Excel 
+
+🤝 Contributing
+
+  Fork the repo
+
+  Create a feature branch (git checkout -b feature-name)
+
+  Commit changes (git commit -m "Add feature")
+
+  Push to branch (git push origin feature-name)
+
+  Create a Pull Request
