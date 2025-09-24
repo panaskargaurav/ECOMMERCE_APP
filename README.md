@@ -25,7 +25,8 @@
    - Beginner friendly with Excel  
 
 ## 📂 Project Structure  
-<img width="866" height="824" alt="image" src="https://github.com/user-attachments/assets/457d6747-d0a0-45f1-9c51-6aab92565110" />
+<img width="1209" height="927" alt="image" src="https://github.com/user-attachments/assets/7f32bc03-354b-434e-82f9-5802a244f153" />
+
 
   ECOMMERCE_APP/
    ├── app.py            # Main entry point
