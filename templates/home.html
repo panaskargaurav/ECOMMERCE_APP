@@ -13,31 +13,57 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background-color: #0a0a0a;
         }
 
         .bg-container {
-            height: 100vh;
+            min-height: 100vh;
             width: 100vw;
             background: url('https://img.freepik.com/premium-vector/online-shopping-digital-technology-with-icon-blue-background-ecommerce-online-store-marketing_252172-219.jpg') no-repeat center center fixed;
             background-size: cover;
             display: flex;
-            justify-content: center;
+            justify-content: flex-end; /* default right */
             align-items: center;
-            transition: background-image 0.4s ease;
+            transition: all 0.6s ease;
+            padding: 40px 60px;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
         }
 
-        #toggleBgBtn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 999;
-            background-color: rgba(255, 255, 255, 0.6);
-            border: none;
-            border-radius: 20px;
-            padding: 8px 16px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #000;
+        /* Centered state when second background is active */
+        .bg-container.center .glass-card {
+            margin: 0 auto;
+        }
+        .bg-container.center {
+            justify-content: center;
+        }
+
+        /* Medium gradient semi-circle behind card */
+        .medium-circle {
+            position: absolute;
+            right: 10%;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(255, 200, 50, 0.4), rgba(255, 100, 200, 0.4));
+            border-radius: 50%;
+            transform: rotate(25deg);
+            box-shadow: 0 0 20px rgba(255, 200, 50, 0.3), 0 0 30px rgba(255, 100, 200, 0.2);
+            z-index: 1;
+            animation: floatMedium 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatMedium {
+            0% { transform: rotate(25deg) translateY(0px); }
+            50% { transform: rotate(25deg) translateY(-10px); }
+            100% { transform: rotate(25deg) translateY(0px); }
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.6;
         }
 
         .glass-card {
@@ -49,9 +75,14 @@
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.18);
             color: white;
-            max-width: 500px;
-            width: 90%;
+            max-width: 400px;
+            width: 100%;
             text-align: center;
+            overflow-y: auto;
+            max-height: 90vh;
+            position: relative;
+            z-index: 2;
+            transition: all 0.6s ease;
         }
 
         .glass-card h1 {
@@ -71,28 +102,39 @@
             box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
         }
 
-        .glass-card .btn {
-            min-width: 180px;
+        .glass-card .btn { min-width: 180px; }
+
+        .gap-3 > * { margin-bottom: 1rem; }
+
+        #toggleBgBtn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 999;
+            background-color: rgba(255, 255, 255, 0.6);
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #000;
         }
 
-        .gap-3 > * {
-            margin-bottom: 1rem;
-        }
-
-        @media (max-width: 576px) {
-            .glass-card h1 {
-                font-size: 2rem;
-            }
+        @media (max-width: 768px) {
+            .bg-container { justify-content: center; padding: 20px; }
+            .glass-card { max-width: 90%; }
+            .medium-circle { display: none; }
         }
     </style>
 </head>
 <body>
 
-<!-- Toggle Button -->
-<button id="toggleBgBtn">Switch Background</button>
+<button id="toggleBgBtn">Try This</button>
 
-<!-- Background Container -->
 <div class="bg-container" id="bgContainer">
+    <div class="medium-circle"></div>
+    <div id="circles-container"></div>
+
     <div class="glass-card">
         <h1>Welcome to MyShop</h1>
         <p class="mb-4">Your one-stop shop for all your favorite products!</p>
@@ -125,11 +167,49 @@
     let isOriginal = true;
 
     toggleBtn.addEventListener('click', () => {
-        bgContainer.style.backgroundImage = isOriginal
-            ? "url('https://img.freepik.com/premium-vector/online-shopping-digital-technology-with-icon-blue-background-ecommerce-online-store-marketing_252172-219.jpg')"
-            : "url('https://static.vecteezy.com/system/resources/thumbnails/030/475/477/small_2x/background-for-productgraphy-ai-generative-photo.jpg')";
+        if (isOriginal) {
+            bgContainer.style.backgroundImage = "url('https://static.vecteezy.com/system/resources/thumbnails/030/475/477/small_2x/background-for-productgraphy-ai-generative-photo.jpg')";
+            bgContainer.classList.add('center'); // move card to center
+        } else {
+            bgContainer.style.backgroundImage = "url('https://img.freepik.com/premium-vector/online-shopping-digital-technology-with-icon-blue-background-ecommerce-online-store-marketing_252172-219.jpg')";
+            bgContainer.classList.remove('center'); // move card back right
+        }
         isOriginal = !isOriginal;
     });
+
+    // Small moving circles
+    const circlesContainer = document.getElementById('circles-container');
+    const numCircles = 10;
+    const colors = ['rgba(255,255,255,0.5)', 'rgba(255,200,50,0.5)', 'rgba(255,100,200,0.5)'];
+
+    const circles = [];
+    for (let i = 0; i < numCircles; i++) {
+        const div = document.createElement('div');
+        div.classList.add('circle');
+        const size = Math.random() * 15 + 8;
+        div.style.width = `${size}px`;
+        div.style.height = `${size}px`;
+        div.style.background = colors[Math.floor(Math.random() * colors.length)];
+        div.style.top = Math.random() * 100 + 'vh';
+        div.style.left = Math.random() * 100 + 'vw';
+        circlesContainer.appendChild(div);
+        circles.push({el: div, x: parseFloat(div.style.left), y: parseFloat(div.style.top), dx: (Math.random()-0.5)/2, dy: (Math.random()-0.5)/2});
+    }
+
+    function animateCircles() {
+        circles.forEach(c => {
+            c.x += c.dx;
+            c.y += c.dy;
+            if(c.x > 100) c.x = 0;
+            if(c.x < 0) c.x = 100;
+            if(c.y > 100) c.y = 0;
+            if(c.y < 0) c.y = 100;
+            c.el.style.left = c.x + 'vw';
+            c.el.style.top = c.y + 'vh';
+        });
+        requestAnimationFrame(animateCircles);
+    }
+    animateCircles();
 </script>
 
 </body>
