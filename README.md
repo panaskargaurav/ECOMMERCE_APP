@@ -28,44 +28,6 @@
 <img width="1209" height="927" alt="image" src="https://github.com/user-attachments/assets/7f32bc03-354b-434e-82f9-5802a244f153" />
 
 
-  ECOMMERCE_APP/
-   ├── app.py            # Main entry point
-   ├── data_new.xlsx     # Excel storage (if using Excel)
-   ├── requirements.txt  # Python dependencies
-   ├── routes/           # Flask Blueprints
-   │ ├── customers/
-   │ │ └── customers.py
-   │ ├── orders/
-   │ │ └── orders.py
-   │ ├── products/
-   │ │ └── products.py
-   │ └── users/
-   │ └── users.py
-   ├── templates/         # HTML templates (Jinja2 and using inline css/Bootstrap)
-   ├── base.html
-   ├── home.html
-   ├── customers/
-   │   └──  add.html
-   │   └──  details.html
-   │   └──  update.html
-   ├── orders/
-   │   └── add.html
-   │   └── details.html
-   │   └── orders.html
-   │   └── update.html
-   ├── products/
-   │   └── add.html
-   │   └── details.html
-   │   └── manage_products.html
-   │   └── update.html
-   ├── products/
-   │   └── login.html
-   │   └── register.html
-   └── admin/
-      └── data.html
-      └── login.html
-
-
 ## ⚙️ Installation  
 
 1. **Clone the repo**  
