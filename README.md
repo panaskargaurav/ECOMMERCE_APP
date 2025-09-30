@@ -47,7 +47,7 @@
   pip install -r requirements.txt
 
 
-📦 Requirements
+# 📦 Requirements
 
   Your requirements.txt should contain:
 
@@ -65,7 +65,7 @@
 
   http://127.0.0.1:5000/
 
-🔑 Default Credentials
+# 🔑 Default Credentials
 
  Admin Login
 
@@ -75,7 +75,7 @@
 
  (Update credentials in your Excel)
 
-🛠 Tech Stack
+# 🛠 Tech Stack
 
  *Backend → Python, Flask, Pandas/SQLite
 
@@ -83,7 +83,7 @@
 
  *Storage → Excel 
 
-🤝 Contributing
+# 🤝 Contributing
 
   Fork the repo
 
